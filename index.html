@@ -21,7 +21,8 @@
     <link rel="stylesheet" href="./static/css/styles.css">
     <link rel="stylesheet" href="./static/css/output.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dom-to-image-more@3.2.1/dist/dom-to-image-more.min.js"></script>
     <script src="./static/js/history.js"></script>
     <script src="./static/js/urdown.js"></script>
 </head>
@@ -359,6 +360,14 @@
             </div>
             <div class="p-5 flex-1 overflow-y-auto"><div id="output_inner_diff" markdown-to-html="versionDiffContent" dir="{{defaultDir}}"></div></div>
             <div class="flex justify-end gap-2 px-5 py-3 border-t border-gray-200 dark:border-gray-800"><button class="text-sm px-4 py-2 rounded-xl bg-primary-500 text-white hover:bg-primary-600 transition-colors" ng-click="loadFromHistory(selectedVersion);showVersionDiffBool=false">Restore This Version</button><button class="text-sm px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors" ng-click="showVersionDiffBool=false">Close</button></div>
+        </div>
+    </div>
+
+    <!-- ============ LOADING OVERLAY ============ -->
+    <div ng-show="exporting" class="fixed inset-0 z-[9998] flex items-center justify-center bg-black/20 backdrop-blur-sm">
+        <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl px-8 py-6 flex items-center gap-4 border border-gray-200 dark:border-gray-700">
+            <svg class="w-6 h-6 animate-spin text-primary-500" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4 31.4" stroke-linecap="round"/></svg>
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Exporting...</span>
         </div>
     </div>
 

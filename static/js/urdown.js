@@ -344,35 +344,37 @@ urdown.controller('urdownCtrl', function ($scope, $http, $location, $window, $ti
         $scope.showBars = !$scope.showBars
         try { localStorage.setItem('urdown_bars', JSON.stringify($scope.showBars)) } catch (e) {}
     }
+    $scope.exporting = false
     $scope.exportPDF = function () {
         var out = document.getElementById('output_outer')
         if (!out || !out.innerHTML.trim()) { $scope.showToast('Nothing to export', 'error'); return }
+        $scope.exporting = true
         var css = ''
         var links = document.querySelectorAll('link[rel="stylesheet"]')
         for (var i = 0; i < links.length; i++) css += links[i].outerHTML
-        var html = '<!DOCTYPE html><html><head><meta charset="UTF-8">' + css + '<style>body{margin:0 auto;padding:0;max-width:210mm}@page{margin:15mm}#output_inner{font-size:12pt}</style></head><body>' + out.innerHTML + '</body></html>'
+        var html = '<!DOCTYPE html><html><head><meta charset="UTF-8">' + css + '<style>body{margin:0 auto;padding:2em;max-width:210mm}@page{margin:15mm}#output_inner{font-size:12pt}.no-print{display:none!important}</style></head><body>' + out.innerHTML + '</body></html>'
         var w = window.open('', '_blank')
         w.document.write(html)
         w.document.close()
         w.document.title = ($scope.fileName || 'urdown') + '-print'
-        w.onload = function () { w.focus(); w.print() }
+        w.onload = function () { $scope.$apply(function () { $scope.exporting = false }); w.focus(); w.print() }
+        $timeout(function () { if ($scope.exporting) $scope.exporting = false }, 5000)
     }
     $scope.downloadPDF = function () {
-        if (typeof html2pdf === 'undefined') { $scope.showToast('PDF export not available', 'error'); return }
-        var el = document.getElementById('output_outer')
-        if (!el || !el.innerHTML.trim()) { $scope.showToast('Nothing to export', 'error'); return }
-        var opt = {
-            margin: 10, filename: ($scope.fileName || 'urdown').replace(/\.[^.]+$/, '') + '.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, logging: false },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak: { mode: 'avoid-all' }
-        }
-        html2pdf().set(opt).from(el).save().then(function () {
-            $scope.$apply(function () { $scope.showToast('PDF downloaded', 'success') })
-        }).catch(function () {
-            $scope.$apply(function () { $scope.showToast('PDF export failed', 'error') })
-        })
+        var out = document.getElementById('output_outer')
+        if (!out || !out.innerHTML.trim()) { $scope.showToast('Nothing to export', 'error'); return }
+        $scope.exporting = true
+        var css = ''
+        var links = document.querySelectorAll('link[rel="stylesheet"]')
+        for (var i = 0; i < links.length; i++) css += links[i].outerHTML
+        var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + ($scope.fileName || 'urdown') + '</title>' + css + '<style>body{margin:2em auto;padding:0;max-width:210mm}@page{margin:15mm;size:A4}#output_inner{font-size:12pt}</style></head><body>' + out.innerHTML + '</body></html>'
+        var w = window.open('', '_blank')
+        w.document.write(html)
+        w.document.close()
+        w.document.title = ($scope.fileName || 'urdown') + '.pdf'
+        w.onload = function () { $scope.$apply(function () { $scope.exporting = false }); w.focus(); w.print() }
+        $scope.showToast('PDF ready — choose "Save as PDF" in print dialog', 'info')
+        $timeout(function () { if ($scope.exporting) $scope.exporting = false }, 5000)
     }
     $scope.isFullscreen = false
     $scope.toggleFullscreen = function () {
@@ -388,19 +390,20 @@ urdown.controller('urdownCtrl', function ($scope, $http, $location, $window, $ti
         }
     }
     $scope.exportImage = function () {
-        if (typeof html2canvas === 'undefined' && typeof html2pdf === 'undefined') { $scope.showToast('Image export not available', 'error'); return }
         var el = document.getElementById('output_outer') || document.getElementById('output_inner')
         if (!el || !el.innerHTML.trim()) { $scope.showToast('Nothing to export', 'error'); return }
+        if (typeof domtoimage === 'undefined') { $scope.showToast('Image export not available', 'error'); return }
+        $scope.exporting = true
         document.fonts.ready.then(function () {
-            var h2c = typeof html2canvas !== 'undefined' ? html2canvas : (html2pdf && html2pdf.html2canvas ? html2pdf.html2canvas : null)
-            if (!h2c) { $scope.$apply(function () { $scope.showToast('Image export not available', 'error') }); return }
-            h2c(el, { scale: 2, useCORS: true, logging: false, allowTaint: true, backgroundColor: '#ffffff' }).then(function (canvas) {
-                canvas.toBlob(function (blob) {
+            domtoimage.toBlob(el, { quality: 1, bgColor: '#ffffff', width: el.scrollWidth * 2, height: el.scrollHeight * 2, style: { transform: 'scale(2)', transformOrigin: 'top left' } })
+                .then(function (blob) {
                     saveAs(blob, ($scope.fileName || 'urdown').replace(/\.[^.]+$/, '') + '-preview.png')
-                    $scope.$apply(function () { $scope.showToast('Image exported', 'success') })
+                    $scope.$apply(function () { $scope.showToast('Image exported', 'success'); $scope.exporting = false })
+                }).catch(function () {
+                    $scope.$apply(function () { $scope.showToast('Image export failed', 'error'); $scope.exporting = false })
                 })
-            }).catch(function () { $scope.$apply(function () { $scope.showToast('Image export failed', 'error') }) })
         })
+        $timeout(function () { if ($scope.exporting) $scope.exporting = false }, 15000)
     }
     $scope.showHTMLPanel = function () {
         $scope.showHTML = !$scope.showHTML; $scope.showOpen = false; $scope.showOppDir = false
