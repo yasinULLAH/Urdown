@@ -13,7 +13,65 @@ body, #app, input, textarea, select, button {
 /* --- Night theme via Tailwind dark class equivalent --- */
 body.night {
   color-scheme: dark;
+  --bg-base: #0d1117;
+  --bg-surface: #161b22;
+  --bg-elevated: #21262d;
+  --border-color: #30363d;
+  --text-primary: #c9d1d9;
+  --text-secondary: #8b949e;
+  --accent: #6366f1;
 }
+
+body.night, body.night #app,
+body.night .bg-white, body.night .dark\:bg-gray-950,
+body.night [class*="bg-gray-950"] { background-color: var(--bg-base); }
+
+body.night #topbar,
+body.night .bg-gray-50, body.night .dark\:bg-gray-900,
+body.night [class*="bg-gray-900"],
+body.night #raw_text,
+body.night #preview-pane,
+body.night #output_outer { background-color: var(--bg-surface); }
+
+body.night #statusbar { background-color: var(--bg-surface); }
+
+body.night #splitter > div { background-color: #30363d; }
+
+body.night .slide-start, body.night .slide-end,
+body.night [class*="border-gray-200"],
+body.night [class*="border-gray-100"],
+body.night [class*="border-gray-800"] { border-color: var(--border-color); }
+
+body.night #topbar { border-bottom-color: var(--border-color); }
+body.night #statusbar { border-top-color: var(--border-color); }
+body.night #preview-pane > div:first-child { border-bottom-color: var(--border-color); }
+body.night #preview-pane { border-left-color: var(--border-color); }
+
+body.night #line-nums { border-color: var(--border-color); }
+
+body.night { color: var(--text-primary); }
+body.night .text-gray-400 { color: var(--text-secondary); }
+body.night .text-gray-500 { color: var(--text-secondary); }
+
+body.night #raw_text::placeholder { color: var(--text-secondary); opacity: 0.6; }
+
+body.night .menu-item kbd,
+body.night kbd {
+  background: var(--bg-elevated);
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+body.night [class*="bg-gray-100"]:not(.icon-btn):not(.toolbar-btn),
+body.night .hover\:bg-gray-200,
+body.night .hover\:bg-gray-100 {
+  background-color: var(--bg-elevated);
+}
+
+body.night .icon-btn:hover { background-color: var(--bg-elevated); color: var(--text-primary); }
+body.night .toolbar-btn:hover { background-color: var(--bg-elevated); color: var(--text-primary); }
+body.night .menu-item:hover { background-color: var(--bg-elevated); }
+body.night [class*="hover:bg-gray"]:hover { background-color: var(--bg-elevated) !important; }
 
 /* --- Icon buttons --- */
 .icon-btn {

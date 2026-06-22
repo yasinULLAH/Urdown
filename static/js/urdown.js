@@ -340,6 +340,30 @@ urdown.controller('urdownCtrl', function ($scope, $http, $location, $window, $ti
         $scope.saved = true; $scope.showToast('File saved', 'success')
     }
     $scope.exportPDF = function () { $window.print() }
+    $scope.isFullscreen = false
+    $scope.toggleFullscreen = function () {
+        if (!document.fullscreenElement) {
+            var el = document.documentElement
+            if (el.requestFullscreen) el.requestFullscreen()
+            else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen()
+            else if (el.msRequestFullscreen) el.msRequestFullscreen()
+        } else {
+            if (document.exitFullscreen) document.exitFullscreen()
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen()
+            else if (document.msExitFullscreen) document.msExitFullscreen()
+        }
+    }
+    $scope.exportImage = function () {
+        if (typeof html2canvas === 'undefined') { $scope.showToast('Image export not available', 'error'); return }
+        var el = document.getElementById('output_outer') || document.getElementById('output_inner')
+        if (!el) return
+        html2canvas(el, { scale: 2, useCORS: true, logging: false }).then(function (canvas) {
+            canvas.toBlob(function (blob) {
+                saveAs(blob, ($scope.fileName || 'urdown').replace(/\.[^.]+$/, '') + '-preview.png')
+                $scope.$apply(function () { $scope.showToast('Image exported', 'success') })
+            })
+        }).catch(function () { $scope.showToast('Image export failed', 'error') })
+    }
     $scope.showHTMLPanel = function () {
         $scope.showHTML = !$scope.showHTML; $scope.showOpen = false; $scope.showOppDir = false
         if ($scope.showHTML) $scope.genHTML()
@@ -553,6 +577,7 @@ urdown.controller('urdownCtrl', function ($scope, $http, $location, $window, $ti
         $scope.$watch(function () { return $location.search() }, function () { if ($location.search().src) $scope.loadFromParams() }, true)
         $scope.$watch('rawText', function (n, o) { if (n !== o) { $scope.updateStats(); $scope.updateLineNums() } })
         angular.element($window).on('scroll', function () { $scope.scrolled = window.pageYOffset > 0; $scope.$apply() })
+        angular.element($window).on('fullscreenchange webkitfullscreenchange mozfullscreenchange MSFullscreenChange', function () { $scope.$apply(function () { $scope.isFullscreen = !!document.fullscreenElement }) })
         document.documentElement.dir = $scope.defaultDir; document.body.dir = $scope.defaultDir
         $http.get('./static/placeholder.txt').then(function (r) { $scope.placeholder = r.data })
         $scope.showToast('Welcome to Urdown', 'info')
