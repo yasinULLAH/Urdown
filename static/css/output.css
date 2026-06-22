@@ -6,19 +6,18 @@
   max-width: 100%;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  font-family: 'Calibri', 'Corbel', 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', sans-serif !important;
 }
 
 #output_inner[dir="rtl"] {
   direction: rtl;
   text-align: right;
-  font-family: 'Calibri', 'Corbel', 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', sans-serif !important;
   line-height: 2;
 }
 
 #output_inner[dir="ltr"] {
   direction: ltr;
   text-align: left;
-  font-family: 'Calibri', 'Corbel', 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif !important;
   line-height: 1.7;
 }
 
