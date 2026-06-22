@@ -345,36 +345,43 @@ urdown.controller('urdownCtrl', function ($scope, $http, $location, $window, $ti
         try { localStorage.setItem('urdown_bars', JSON.stringify($scope.showBars)) } catch (e) {}
     }
     $scope.exporting = false
-    $scope.exportPDF = function () {
+    function getInlineCSS() {
+        var css = ''; var seen = {}
+        for (var i = 0; i < document.styleSheets.length; i++) {
+            try {
+                var sheet = document.styleSheets[i]
+                for (var j = 0; j < sheet.cssRules.length; j++) {
+                    var t = sheet.cssRules[j].cssText
+                    if (!seen[t]) { css += t; seen[t] = true }
+                }
+            } catch (e) {}
+        }
+        return css
+    }
+    function openPrintWindow(title, isDownload) {
         var out = document.getElementById('output_outer')
         if (!out || !out.innerHTML.trim()) { $scope.showToast('Nothing to export', 'error'); return }
         $scope.exporting = true
-        var css = ''
-        var links = document.querySelectorAll('link[rel="stylesheet"]')
-        for (var i = 0; i < links.length; i++) css += links[i].outerHTML
-        var html = '<!DOCTYPE html><html><head><meta charset="UTF-8">' + css + '<style>body{margin:0 auto;padding:2em;max-width:210mm}@page{margin:15mm}#output_inner{font-size:12pt}.no-print{display:none!important}</style></head><body>' + out.innerHTML + '</body></html>'
+        var css = getInlineCSS()
+        var printCSS = 'body{margin:2em auto;padding:0;max-width:210mm;font-family:Calibri,sans-serif}' +
+            '@page{margin:15mm' + (isDownload ? ';size:A4' : '') + '}' +
+            '#output_inner{font-size:12pt}' +
+            '#topbar,#statusbar,.slide-start,.slide-end,.fixed,#splitter,#toast,#line-nums,#raw_text{display:none!important}'
+        var dir = out.getAttribute('dir') || 'rtl'
+        var html = '<!DOCTYPE html><html dir="' + dir + '"><head><meta charset="UTF-8"><title>' + title +
+            '</title><style>' + css + printCSS + '</style></head><body>' + out.innerHTML + '</body></html>'
         var w = window.open('', '_blank')
+        if (!w) { $scope.showToast('Popup blocked — allow popups for this site', 'error'); $scope.exporting = false; return }
         w.document.write(html)
         w.document.close()
-        w.document.title = ($scope.fileName || 'urdown') + '-print'
+        w.document.title = title
         w.onload = function () { $scope.$apply(function () { $scope.exporting = false }); w.focus(); w.print() }
         $timeout(function () { if ($scope.exporting) $scope.exporting = false }, 5000)
     }
+    $scope.exportPDF = function () { openPrintWindow(($scope.fileName || 'urdown') + '-print', false) }
     $scope.downloadPDF = function () {
-        var out = document.getElementById('output_outer')
-        if (!out || !out.innerHTML.trim()) { $scope.showToast('Nothing to export', 'error'); return }
-        $scope.exporting = true
-        var css = ''
-        var links = document.querySelectorAll('link[rel="stylesheet"]')
-        for (var i = 0; i < links.length; i++) css += links[i].outerHTML
-        var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + ($scope.fileName || 'urdown') + '</title>' + css + '<style>body{margin:2em auto;padding:0;max-width:210mm}@page{margin:15mm;size:A4}#output_inner{font-size:12pt}</style></head><body>' + out.innerHTML + '</body></html>'
-        var w = window.open('', '_blank')
-        w.document.write(html)
-        w.document.close()
-        w.document.title = ($scope.fileName || 'urdown') + '.pdf'
-        w.onload = function () { $scope.$apply(function () { $scope.exporting = false }); w.focus(); w.print() }
-        $scope.showToast('PDF ready — choose "Save as PDF" in print dialog', 'info')
-        $timeout(function () { if ($scope.exporting) $scope.exporting = false }, 5000)
+        openPrintWindow(($scope.fileName || 'urdown') + '.pdf', true)
+        $scope.showToast('In print dialog, choose "Save as PDF" as destination', 'info')
     }
     $scope.isFullscreen = false
     $scope.toggleFullscreen = function () {
