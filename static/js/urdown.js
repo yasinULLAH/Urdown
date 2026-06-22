@@ -345,41 +345,50 @@ urdown.controller('urdownCtrl', function ($scope, $http, $location, $window, $ti
         try { localStorage.setItem('urdown_bars', JSON.stringify($scope.showBars)) } catch (e) {}
     }
     $scope.exporting = false
-    function buildExportHTML(isDownload) {
+    function doExportPrint(title, msg, isDownload) {
         var out = document.getElementById('output_outer')
-        if (!out) return null
-        var css = ''
-        for (var i = 0; i < document.styleSheets.length; i++) {
-            try { var s = document.styleSheets[i]; for (var j = 0; j < s.cssRules.length; j++) css += s.cssRules[j].cssText } catch (e) {}
-        }
-        var printCSS = 'body{margin:2em auto;padding:1em;max-width:210mm;font-family:Calibri,Corbel,Segoe UI,Tahoma,Geneva,Verdana,sans-serif}' +
-            '@page{margin:12mm' + (isDownload ? ';size:A4' : '') + '}' +
-            '#output_inner{font-size:12pt!important}' +
-            '#topbar,#statusbar,.slide-start,.slide-end,.fixed,#splitter,#toast,#line-nums,#raw_text,#searchbar{display:none!important}'
-        var dir = out.getAttribute('dir') || 'rtl'
-        return '<!DOCTYPE html><html dir="' + dir + '"><head><meta charset="UTF-8"><style>' + css + printCSS + '</style></head><body>' + out.innerHTML + '</body></html>'
-    }
-    function doExportPrint(html, title, msg, isDownload) {
-        if (!html) { $scope.showToast('Nothing to export', 'error'); return }
+        if (!out || !out.innerHTML.trim()) { $scope.showToast('Nothing to export', 'error'); return }
         $scope.exporting = true
-        var iframe = document.createElement('iframe')
-        iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:210mm;height:297mm;border:none;opacity:0;pointer-events:none'
-        document.body.appendChild(iframe)
-        var doc = iframe.contentDocument || iframe.contentWindow.document
-        doc.open(); doc.write(html); doc.close()
-        doc.title = title
-        if (msg) $scope.showToast(msg, 'info')
-        $timeout(function () {
-            try {
-                iframe.contentWindow.focus()
-                iframe.contentWindow.print()
-            } catch (e) { $scope.showToast('Print failed — try Export Image instead', 'error') }
+        Promise.all([
+            fetch('./static/css/output.css').then(function (r) { return r.text() }).catch(function () { return '' }),
+            fetch('./static/css/styles.css').then(function (r) { return r.text() }).catch(function () { return '' })
+        ]).then(function (styles) {
+            var css = styles.join('\n')
+            var fontLink = ''
+            var fl = document.querySelector('link[href*="fonts.googleapis"]')
+            if (fl) fontLink = fl.outerHTML
+            var printCSS = 'body{margin:1.5em auto;padding:0.5em;max-width:210mm}' +
+                '@page{margin:12mm' + (isDownload ? ';size:A4' : '') + '}' +
+                '#output_inner{font-size:12pt!important}' +
+                '#topbar,#statusbar,.slide-start,.slide-end,.fixed,#splitter,#toast,#line-nums,#raw_text,#searchbar,button,nav,header,footer{display:none!important}'
+            var dir = out.getAttribute('dir') || 'rtl'
+            var html = '<!DOCTYPE html><html dir="' + dir + '"><head><meta charset="UTF-8"><title>' + title + '</title>' +
+                fontLink + '<style>' + css + printCSS + '</style></head><body>' + out.innerHTML + '</body></html>'
+            var blob = new Blob([html], { type: 'text/html;charset=utf-8' })
+            var url = URL.createObjectURL(blob)
+            var iframe = document.createElement('iframe')
+            iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:210mm;height:297mm;border:none;opacity:0'
+            iframe.onload = function () {
+                if (msg) $scope.showToast(msg, 'info')
+                $timeout(function () {
+                    try {
+                        iframe.contentWindow.focus()
+                        iframe.contentWindow.print()
+                    } catch (e) { $scope.showToast('Print failed', 'error') }
+                    $scope.exporting = false
+                    URL.revokeObjectURL(url)
+                    $timeout(function () { if (iframe.parentNode) iframe.parentNode.removeChild(iframe) }, 3000)
+                }, 800)
+            }
+            document.body.appendChild(iframe)
+            iframe.src = url
+        }).catch(function () {
+            $scope.showToast('Export failed', 'error')
             $scope.exporting = false
-            $timeout(function () { if (iframe.parentNode) iframe.parentNode.removeChild(iframe) }, 2000)
-        }, 600)
+        })
     }
-    $scope.exportPDF = function () { doExportPrint(buildExportHTML(false), ($scope.fileName || 'urdown') + '-print', null, false) }
-    $scope.downloadPDF = function () { doExportPrint(buildExportHTML(true), ($scope.fileName || 'urdown') + '.pdf', 'Choose "Save as PDF" in the print dialog', true) }
+    $scope.exportPDF = function () { doExportPrint(($scope.fileName || 'urdown') + '-print', null, false) }
+    $scope.downloadPDF = function () { doExportPrint(($scope.fileName || 'urdown') + '.pdf', 'Choose "Save as PDF" in the print dialog', true) }
     $scope.isFullscreen = false
     $scope.toggleFullscreen = function () {
         if (!document.fullscreenElement) {
