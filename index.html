@@ -116,7 +116,7 @@
     <main id="main" class="flex-1 flex overflow-hidden relative">
 
         <!-- Editor Pane -->
-        <div id="editor-pane" class="flex flex-1 overflow-hidden" ng-class="{'w-full':!settings.autoPreview||!editMode}">
+        <div id="editor-pane" class="flex flex-1 overflow-hidden relative" ng-class="{'w-full':!settings.autoPreview||!editMode}">
             <!-- Line Numbers -->
             <div id="line-nums" ng-show="settings.lineNumbers && editMode" class="py-5 px-2 text-xs leading-relaxed font-mono text-gray-400 dark:text-gray-600 bg-gray-50 dark:bg-gray-900 select-none overflow-hidden shrink-0" ng-class="{'text-right':defaultDir==='rtl','text-left':defaultDir==='ltr'}" style="min-width:36px">
                 <div ng-repeat="n in lineNumArray track by $index" class="leading-relaxed">{{$index + 1}}</div>
@@ -190,7 +190,7 @@
     </footer>
 
     <!-- ============ OVERLAY ============ -->
-    <div class="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 transition-opacity duration-300" ng-show="showOpen||showHTML||showOppDir||showShortcuts||showHelp||showAbout||showVersionDiff" ng-click="showOpen=false;showHTML=false;showOppDir=false;showShortcuts=false;showHelp=false;showAbout=false;showVersionDiff=false"></div>
+    <div class="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 transition-opacity duration-300" ng-show="showOpen||showHTML||showOppDir||showShortcuts||showHelp||showAbout||showVersionDiffBool" ng-click="showOpen=false;showHTML=false;showOppDir=false;showShortcuts=false;showHelp=false;showAbout=false;showVersionDiffBool=false"></div>
 
     <!-- ============ SLIDE PANELS (start side - menu) ============ -->
     <div class="fixed top-0 bottom-0 w-72 max-w-[85vw] z-50 bg-white dark:bg-gray-950 shadow-2xl border-l border-gray-200 dark:border-gray-800 transform transition-transform duration-300 ease-out overflow-hidden flex flex-col slide-start" ng-class="{'translate-x-0':mobileToolbar}">
@@ -338,14 +338,14 @@
     </div>
 
     <!-- Version Diff -->
-    <div class="fixed inset-0 z-50 flex items-center justify-center pointer-events-none" ng-show="showVersionDiff">
+    <div class="fixed inset-0 z-50 flex items-center justify-center pointer-events-none" ng-show="showVersionDiffBool">
         <div class="bg-white dark:bg-gray-950 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col pointer-events-auto border border-gray-200 dark:border-gray-800" ng-click="$event.stopPropagation()">
             <div class="flex items-center justify-between px-5 py-3.5 border-b border-gray-200 dark:border-gray-800">
                 <span class="font-semibold text-sm">Version: {{selectedVersion.title}} <span class="text-xs font-normal text-gray-400">{{selectedVersion.timestamp | date:'MMM d, y h:mm a'}}</span></span>
-                <button class="icon-btn small" ng-click="showVersionDiff=false"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                <button class="icon-btn small" ng-click="showVersionDiffBool=false"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
             </div>
             <div class="p-5 flex-1 overflow-y-auto"><div id="output_inner_diff" markdown-to-html="versionDiffContent" ng-class="defaultDir"></div></div>
-            <div class="flex justify-end gap-2 px-5 py-3 border-t border-gray-200 dark:border-gray-800"><button class="text-sm px-4 py-2 rounded-xl bg-primary-500 text-white hover:bg-primary-600 transition-colors" ng-click="loadFromHistory(selectedVersion);showVersionDiff=false">Restore This Version</button><button class="text-sm px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors" ng-click="showVersionDiff=false">Close</button></div>
+            <div class="flex justify-end gap-2 px-5 py-3 border-t border-gray-200 dark:border-gray-800"><button class="text-sm px-4 py-2 rounded-xl bg-primary-500 text-white hover:bg-primary-600 transition-colors" ng-click="loadFromHistory(selectedVersion);showVersionDiffBool=false">Restore This Version</button><button class="text-sm px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors" ng-click="showVersionDiffBool=false">Close</button></div>
         </div>
     </div>
 

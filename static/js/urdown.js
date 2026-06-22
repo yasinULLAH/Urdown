@@ -98,7 +98,7 @@ urdown.controller('urdownCtrl', function ($scope, $http, $location, $window, $ti
     $scope.historySearch = ''
     $scope.historyStats = { totalVersions: 0 }
     $scope.selectedVersion = null
-    $scope.showVersionDiff = false
+    $scope.showVersionDiffBool = false
     $scope.versionDiffContent = ''
 
     /* Undo/Redo */
@@ -247,10 +247,10 @@ urdown.controller('urdownCtrl', function ($scope, $http, $location, $window, $ti
         }
         input.click()
     }
-    $scope.showVersionDiff = function (entry) {
+    $scope.viewVersionDiff = function (entry) {
         $scope.selectedVersion = entry
         $scope.versionDiffContent = entry.content
-        $scope.showVersionDiff = true
+        $scope.showVersionDiffBool = true
     }
 
     /* ======== TOOLBAR / FORMATTING ======== */
@@ -490,7 +490,7 @@ urdown.controller('urdownCtrl', function ($scope, $http, $location, $window, $ti
             if ($scope.showHTML) { $scope.showHTML = false; return }
             if ($scope.showOppDir) { $scope.showOppDir = false; return }
             if ($scope.showAbout) { $scope.showAbout = false; return }
-            if ($scope.showVersionDiff) { $scope.showVersionDiff = false; return }
+            if ($scope.showVersionDiffBool) { $scope.showVersionDiffBool = false; return }
         }
         if (k === 'F11' || c === 122) { e.preventDefault(); $scope.focusMode = !$scope.focusMode; document.body.classList.toggle('focus-mode', $scope.focusMode); return }
         if (k === '?' && !ctrl && !e.altKey) { var t = e.target.tagName; if (t !== 'INPUT' && t !== 'TEXTAREA') { e.preventDefault(); $scope.showShortcuts = !$scope.showShortcuts } }
