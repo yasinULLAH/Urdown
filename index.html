@@ -10,8 +10,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>tailwind.config={darkMode:'class',theme:{extend:{colors:{primary:{50:'#eef2ff',100:'#e0e7ff',200:'#c7d2fe',300:'#a5b4fc',400:'#818cf8',500:'#6366f1',600:'#4f46e5',700:'#4338ca',800:'#3730a3',900:'#312e81'}}}}}</script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <script>tailwind.config={darkMode:'class',theme:{extend:{colors:{primary:{50:'#eef2ff',100:'#e0e7ff',200:'#c7d2fe',300:'#a5b4fc',400:'#818cf8',500:'#6366f1',600:'#4f46e5',700:'#4338ca',800:'#3730a3',900:'#312e81'}}}}};tailwind.suppressProductionWarning=true</script>
     <title>Urdown — اردو مارک ڈاؤن ایڈیٹر</title>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular-sanitize.min.js"></script>
@@ -124,7 +124,7 @@
             <!-- Textarea -->
             <textarea id="raw_text"
                 class="flex-1 resize-none border-none outline-none p-5 text-base leading-relaxed bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 overflow-y-auto overflow-x-hidden break-words whitespace-pre-wrap transition-colors duration-300"
-                ng-class="[defaultDir, {'font-[\"Noto_Nastaliq_Urdu\",\"Jameel_Noori_Nastaleeq\",serif] text-lg leading-[2]':defaultDir==='rtl'}]"
+                ng-class="[defaultDir, {'rtl-textarea': defaultDir==='rtl'}]"
                 ng-style="editorStyle"
                 ng-model="rawText"
                 ng-show="editMode"
@@ -302,7 +302,7 @@
     <div class="fixed inset-0 z-50 flex items-center justify-center pointer-events-none" ng-show="showOppDir">
         <div class="bg-white dark:bg-gray-950 rounded-2xl shadow-2xl w-full max-w-lg max-h-[80vh] flex flex-col pointer-events-auto border border-gray-200 dark:border-gray-800" ng-click="$event.stopPropagation()">
             <div class="flex items-center justify-between px-5 py-3.5 border-b border-gray-200 dark:border-gray-800"><span class="font-semibold text-sm">Opposite Direction Text</span><button class="icon-btn small" ng-click="showOppDir=false"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
-            <div class="p-5"><textarea id="opp_input" dir="{{oppDir}}" ng-model="oppDirText" class="w-full min-h-[200px] rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-4 text-base outline-none resize-y leading-relaxed" ng-class="{'font-[\"Noto_Nastaliq_Urdu\",\"Jameel_Noori_Nastaleeq\",serif] leading-[2]':oppDir==='rtl'}"></textarea></div>
+            <div class="p-5"><textarea id="opp_input" dir="{{oppDir}}" ng-model="oppDirText" class="w-full min-h-[200px] rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-4 text-base outline-none resize-y leading-relaxed" ng-class="{'rtl-textarea': oppDir==='rtl'}"></textarea></div>
             <div class="flex justify-end gap-2 px-5 py-3 border-t border-gray-200 dark:border-gray-800"><button class="text-sm px-4 py-2 rounded-xl bg-primary-500 text-white hover:bg-primary-600 transition-colors" ng-click="insertOppDir()">Insert</button><button class="text-sm px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors" ng-click="showOppDir=false">Cancel</button></div>
         </div>
     </div>

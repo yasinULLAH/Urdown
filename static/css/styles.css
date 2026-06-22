@@ -241,13 +241,13 @@ body.night {
 /* ===========================
    TEXTAREA
    =========================== */
-#raw_text {
+#raw_text, #opp_input {
   font-family: 'Calibri', 'Corbel', 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif;
 }
-#raw_text.rtl {
-  font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', serif;
-  font-size: 17px;
-  line-height: 2;
+.rtl-textarea {
+  font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', serif !important;
+  font-size: 17px !important;
+  line-height: 2 !important;
 }
 #raw_text::placeholder {
   color: #9ca3af;
