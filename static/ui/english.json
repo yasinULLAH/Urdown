@@ -6,17 +6,109 @@
         "html": "HTML",
         "open": "Open",
         "new": "New",
-        "export": "Export",
-        "save": "Save"
+        "export": "Export PDF",
+        "save": "Save",
+        "menu": "Menu",
+        "search": "Search",
+        "stats": "Statistics",
+        "settings": "Settings",
+        "focus": "Focus Mode",
+        "shortcuts": "Keyboard Shortcuts",
+        "copy": "Copy",
+        "toggleEdit": "Toggle Edit",
+        "swapDir": "Swap Direction",
+        "exportKbd": "Ctrl+P"
     },
     "option": {
-        "nightMode": "Night Mode",
-        "editMode": "Edit Mode"
+        "nightMode": "Night",
+        "editMode": "Edit"
     },
     "prompt": {
+        "openTitle": "Open File",
         "openLink": "Insert link to markdown file:",
         "openFile": "Or select file from computer:",
-        "selectFile": "Files..."
+        "selectFile": "Choose File",
+        "oppDirTitle": "Opposite Direction Text",
+        "dropFile": "Drop file here to open"
+    },
+    "preview": {
+        "title": "Preview"
+    },
+    "search": {
+        "placeholder": "Search...",
+        "next": "Next",
+        "prev": "Previous",
+        "replace": "Replace",
+        "replaceAll": "Replace All",
+        "replacePlaceholder": "Replace with..."
+    },
+    "stats": {
+        "title": "Statistics",
+        "words": "Words",
+        "chars": "Characters",
+        "charsNoSpace": "No Space",
+        "lines": "Lines",
+        "paragraphs": "Paragraphs",
+        "readingTime": "Reading Time",
+        "headings": "Headings",
+        "links": "Links",
+        "wordsShort": "words",
+        "charsShort": "chars",
+        "readingTimeShort": "read"
+    },
+    "settings": {
+        "title": "Settings",
+        "fontSize": "Font Size",
+        "lineHeight": "Line Height",
+        "autoSave": "Auto Save",
+        "wordWrap": "Word Wrap",
+        "lineNumbers": "Line Numbers",
+        "scrollSync": "Scroll Sync",
+        "autoPreview": "Live Preview"
+    },
+    "sidebar": {
+        "title": "Urdown"
+    },
+    "shortcuts": {
+        "title": "Keyboard Shortcuts"
+    },
+    "help": {
+        "title": "Markdown Help"
+    },
+    "toolbar": {
+        "bold": "Bold",
+        "italic": "Italic",
+        "strikethrough": "Strikethrough",
+        "heading1": "Heading 1",
+        "heading2": "Heading 2",
+        "heading3": "Heading 3",
+        "bulletList": "Bullet List",
+        "numberedList": "Numbered List",
+        "taskList": "Task List",
+        "blockquote": "Blockquote",
+        "codeBlock": "Code Block",
+        "inlineCode": "Inline Code",
+        "link": "Link",
+        "image": "Image",
+        "table": "Table",
+        "horizontalRule": "Horizontal Rule"
+    },
+    "status": {
+        "saved": "Saved",
+        "unsaved": "Unsaved"
+    },
+    "toast": {
+        "welcome": "Welcome to Urdown",
+        "saved": "File saved",
+        "copied": "Copied to clipboard",
+        "fileLoaded": "File loaded",
+        "loadError": "Could not load file",
+        "error": "Error",
+        "newDoc": "New document created",
+        "focusMode": "Focus mode enabled"
+    },
+    "confirm": {
+        "discard": "Discard unsaved changes?"
     },
     "helpLink": "#?src=.%2Fdocs%2Furdown_english.md&dir=ltr"
 }

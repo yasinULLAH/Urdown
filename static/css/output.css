@@ -1,22 +1,212 @@
 @import url(https://fonts.googleapis.com/earlyaccess/notonastaliqurdudraft.css);
 
-/*Styles for non-code/pre elements in right to left direction*/
-.rtl #output_inner:not(code):not(pre), .ltr .opp_dir_div :not(code):not(pre) {
-    font-family: 'Noto Nastaliq Urdu Draft', "Palatino Linotype", "Book Antiqua", Palatino, serif;
+/* RTL direction (default) */
+.rtl #output_inner, .ltr .opp_dir_div {
+  direction: rtl;
+}
+.rtl #output_inner:not(code):not(pre):not(.opp_dir_div),
+.ltr .opp_dir_div :not(code):not(pre) {
+  font-family: 'Noto Nastaliq Urdu Draft', 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', 'Palatino Linotype', serif;
+  line-height: 2;
+  word-spacing: 0.05em;
 }
 
-/*Styles for non-code/pre elements in left to right direction*/
-.ltr #output_inner:not(code):not(pre), .rtl .opp_dir_div :not(code):not(pre) {
-    font-family: "Palatino Linotype", "Book Antiqua", Palatino, 'Noto Nastaliq Urdu Draft', serif;
+/* LTR direction */
+.ltr #output_inner, .rtl .opp_dir_div {
+  direction: ltr;
+}
+.ltr #output_inner:not(code):not(pre):not(.opp_dir_div),
+.rtl .opp_dir_div :not(code):not(pre) {
+  font-family: 'Inter', 'Palatino Linotype', 'Book Antiqua', Palatino, 'Noto Nastaliq Urdu Draft', serif;
+  line-height: 1.7;
 }
 
-/*Styles for code/pre elements (blocks and inline)*/
-#output_inner code, #output_inner pre {
-    background-color: #dbdde0;
+#output_inner {
+  font-size: 15px;
+  color: inherit;
+  max-width: 100%;
 }
 
-/*Style for pre elements (only code blocks, not inline)*/
+/* Headings */
+#output_inner h1, #output_inner h2, #output_inner h3,
+#output_inner h4, #output_inner h5, #output_inner h6 {
+  font-family: var(--font, 'Inter'), -apple-system, sans-serif;
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 1.2em 0 0.5em;
+  letter-spacing: -0.02em;
+}
+#output_inner h1 { font-size: 1.8em; border-bottom: 2px solid var(--border, #e2e2f0); padding-bottom: 0.3em; }
+#output_inner h2 { font-size: 1.5em; border-bottom: 1px solid var(--border-light, #eeeef8); padding-bottom: 0.25em; }
+#output_inner h3 { font-size: 1.25em; }
+#output_inner h4 { font-size: 1.1em; }
+#output_inner h5 { font-size: 1em; color: var(--text-secondary, #5a5a7a); }
+#output_inner h6 { font-size: 0.9em; color: var(--text-secondary, #5a5a7a); }
+
+/* Paragraphs & text */
+#output_inner p {
+  margin: 0.6em 0;
+  line-height: inherit;
+}
+#output_inner strong, #output_inner b {
+  font-weight: 700;
+}
+#output_inner em, #output_inner i {
+  font-style: italic;
+}
+#output_inner del, #output_inner s {
+  text-decoration: line-through;
+}
+
+/* Lists */
+#output_inner ul, #output_inner ol {
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+#output_inner.rtl ul, #output_inner.rtl ol,
+.rtl #output_inner ul, .rtl #output_inner ol {
+  padding-left: 0;
+  padding-right: 1.5em;
+}
+#output_inner li {
+  margin: 0.25em 0;
+  line-height: 1.6;
+}
+#output_inner li > ul, #output_inner li > ol {
+  margin: 0.25em 0;
+}
+
+/* Blockquotes */
+#output_inner blockquote {
+  border-left: 4px solid var(--primary, #6C63FF);
+  margin: 0.8em 0;
+  padding: 0.5em 1em;
+  background: var(--primary-soft, rgba(108,99,255,0.08));
+  border-radius: 0 var(--radius-sm, 6px) var(--radius-sm, 6px) 0;
+  color: var(--text-secondary, #5a5a7a);
+}
+.rtl #output_inner blockquote {
+  border-left: none;
+  border-right: 4px solid var(--primary, #6C63FF);
+  border-radius: var(--radius-sm, 6px) 0 0 var(--radius-sm, 6px);
+}
+
+/* Code */
+#output_inner code {
+  font-family: var(--font-mono, 'Cascadia Code', 'Fira Code', monospace);
+  background: var(--bg-alt, #f0f0f8);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.88em;
+  color: var(--text, #1a1a2e);
+  word-break: break-word;
+}
 #output_inner pre {
-    padding: 0.5em;
-    overflow-x: auto;
+  background: var(--bg-alt, #f0f0f8);
+  border: 1px solid var(--border, #e2e2f0);
+  border-radius: var(--radius-sm, 6px);
+  padding: 1em;
+  overflow-x: auto;
+  margin: 0.8em 0;
+  line-height: 1.5;
+}
+#output_inner pre code {
+  background: transparent;
+  padding: 0;
+  border: none;
+  font-size: 0.85em;
+  color: inherit;
+  line-height: 1.5;
+  tab-size: 2;
+}
+
+/* Tables */
+#output_inner table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.8em 0;
+  font-size: 0.9em;
+}
+#output_inner th, #output_inner td {
+  border: 1px solid var(--border, #e2e2f0);
+  padding: 8px 12px;
+  text-align: start;
+}
+#output_inner th {
+  background: var(--bg-alt, #f0f0f8);
+  font-weight: 600;
+}
+#output_inner tr:nth-child(even) {
+  background: var(--bg-alt, #f0f0f8);
+}
+
+/* Horizontal rule */
+#output_inner hr {
+  border: none;
+  height: 1px;
+  background: var(--border, #e2e2f0);
+  margin: 1.5em 0;
+}
+
+/* Links */
+#output_inner a {
+  color: var(--primary, #6C63FF);
+  text-decoration: none;
+  font-weight: 500;
+}
+#output_inner a:hover {
+  text-decoration: underline;
+}
+
+/* Images */
+#output_inner img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm, 6px);
+  margin: 0.5em 0;
+}
+
+/* Task lists */
+#output_inner li.task-list-item {
+  list-style: none;
+  margin-left: -1.5em;
+}
+.rtl #output_inner li.task-list-item {
+  margin-left: 0;
+  margin-right: -1.5em;
+}
+#output_inner li.task-list-item input[type="checkbox"] {
+  margin-right: 0.5em;
+}
+
+/* Opposite direction divs */
+#output_inner .opp_dir_div {
+  padding: 0.5em 1em;
+  margin: 0.5em 0;
+  background: var(--bg-alt, #f0f0f8);
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid var(--border-light, #eeeef8);
+}
+#output_inner .ltr_div, #output_inner .rtl_div {
+  padding: 0.5em 1em;
+  margin: 0.5em 0;
+}
+
+/* Footnotes */
+#output_inner .footnote {
+  font-size: 0.85em;
+  color: var(--text-secondary, #5a5a7a);
+}
+
+/* Abbreviations */
+#output_inner abbr {
+  text-decoration: underline dotted;
+  cursor: help;
+}
+
+/* Mark / highlight */
+#output_inner mark {
+  background: #FEF08A;
+  padding: 0 4px;
+  border-radius: 2px;
 }

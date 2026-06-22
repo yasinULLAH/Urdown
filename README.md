@@ -1,63 +1,191 @@
-﻿# Urdown
-An online Urdu markdown editor written with AngularJS | انٹرنیٹ پر مبنی ٹیکسٹ ایڈیٹر
+﻿# Urdown — اردو مارک ڈاؤن ایڈیٹر
 
-Live demo at [https://hazrmard.github.io/Urdown](https://hazrmard.github.io/Urdown).  
+> **Premium Urdu Markdown Editor** — Write, preview, and export Urdu & RTL content with a modern, responsive, mobile-first interface.
 
-For documentation in Urdu, go to [https://hazrmard.github.io/Urdown/#?src=.%2Fdocs%2Furdown.md](https://hazrmard.github.io/Urdown/#?src=.%2Fdocs%2Furdown.md).  
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![AngularJS](https://img.shields.io/badge/AngularJS-1.8.3-E23237?logo=angular)](https://angularjs.org/)
+[![Showdown](https://img.shields.io/badge/Showdown-2.1.0-744C9E)](https://github.com/showdownjs/showdown)
+[![GitHub Pages](https://img.shields.io/badge/deploy-GitHub%20Pages-222222?logo=github)](https://pages.github.com/)
 
-For documentation in English, go to [https://hazrmard.github.io/Urdown/#?src=.%2Fdocs%2Furdown_english.md&dir=ltr](https://hazrmard.github.io/Urdown/#?src=.%2Fdocs%2Furdown_english.md&dir=ltr).  
+---
 
-**Urdown** (Udru + Markdown) is an online markdown editor with preference for right-to-left
-languages like Urdu. It supports left-to-right languages as well. It can embed blocks of 
-left-to-right languages like English by enclosing them in three commas `,,,` (in new lines). 
-In addition, **Urdown** suports shortcodes for [HugoWiki](https://github.com/OpenUrdu/HugoWiki) hugo theme.
-Embedding text in `{{%rtl|ltr}}TEXT{{%\rtl|ltr%}}` will also produce directed output.
-The rest of the markdown rules are the same as [Showdown.js](https://github.com/showdownjs/showdown/wiki/Showdown's-Markdown-syntax).  
+## Overview
 
-[**Urdown**](https://hazrmard.github.io/Urdown) is a fully client-side app that
-can:  
+Urdown is a fully client-side, online Urdu markdown editor built with AngularJS. It provides a **premium, mobile-first editing experience** for right-to-left (RTL) languages like Urdu, with full support for left-to-right (LTR) content. Write markdown, see live preview, and export to HTML, PDF, or plain text — all in your browser with zero server dependencies.
 
-* Render markdown instantly,
-* Load markdown files from a URL,
-* Load markdown files from disk,
-* Save markdown files to disk,
-* Export rendered markdown as PDF (using browsers' save-to-pdf ability),
-* Export markdown as `HTML`,
-* Switch between day/night modes,
-* Switch between edit/read modes.
+### Key Features
 
-In addition **Urdown** can render markdown files passed as URL arguments:  
+| Feature | Description |
+|---------|-------------|
+| **Live Preview** | Real-time markdown rendering powered by Showdown.js |
+| **RTL/LTR Support** | Native Urdu/Nastaliq font rendering with direction toggling |
+| **Toolbar** | Bold, italic, headings, lists, code blocks, tables, links, images, and more |
+| **Undo/Redo** | Full history stack (Ctrl+Z / Ctrl+Shift+Z) |
+| **Search & Replace** | Find and replace across your entire document |
+| **Auto-Save** | Automatic localStorage persistence with configurable toggle |
+| **Statistics** | Word count, character count, reading time, headings, links, and more |
+| **Focus Mode** | Distraction-free writing environment (F11) |
+| **Scroll Sync** | Bidirectional scroll sync between editor and preview |
+| **Split Pane** | Draggable resizer between editor and preview panels |
+| **Drag & Drop** | Drop markdown files directly into the editor |
+| **Export** | Download as `.md`, copy HTML, print to PDF |
+| **Themes** | Light and dark modes with smooth CSS transitions |
+| **Responsive** | Mobile-first design — works on phones, tablets, and desktops |
+| **Keyboard Shortcuts** | Full shortcut reference modal (press `?`) |
+| **Multi-language UI** | English and Urdu interface, easily extensible |
+
+### CDN-Free Alternative
+
+All external assets can be vendored for fully offline use. Currently loaded from CDN for zero-config deployment.
+
+---
+
+## Built With
+
+- **[AngularJS 1.8.3](https://angularjs.org/)** — MVVM framework
+- **[Showdown.js 2.1.0](https://github.com/showdownjs/showdown)** — Markdown-to-HTML converter
+- **[ng-showdown](https://github.com/showdownjs/ng-showdown)** — AngularJS integration
+- **[FileSaver.js](https://github.com/eligrey/FileSaver.js/)** — Client-side file download
+- **[Inter](https://fonts.google.com/specimen/Inter)** — UI typography
+- **[Noto Nastaliq Urdu](https://fonts.google.com/noto/specimen/Noto+Nastaliq+Urdu)** — Urdu script rendering
+
+---
+
+## Getting Started
+
+### Quick Start
+
+```bash
+git clone https://github.com/yasinULLAH/Urdown.git
+cd Urdown
+# Serve with any HTTP server:
+npx serve .
+# or: python -m http.server
+# or: php -S localhost:8000
 ```
-https://hazrmard.github.io/Urdown/#?src=URL_TO_MARKDOWN_FILE&editMode=[true|false]&nightMode=[true|false]&dir=[ltr|rtl]
+
+Open `http://localhost:8000` in your browser.
+
+### URL Parameters
+
+Load content dynamically via URL hash:
+
+```
+https://yasinullah.github.io/Urdown/#?src=PATH_TO_MARKDOWN&editMode=true&nightMode=false&dir=rtl
 ```
 
-Where `[true|false]` is a placeholder for either `true` or `false`, and 
-`[ltr|rtl]` is a placeholder for either `rtl` (default, right-to-left) or 
-`ltr`. A possible use for this is to add that link in an `iframe` on 
-another site to render Urdu markdown without having to mess with 
-`HTML` tags etc.
+| Param | Values | Default | Description |
+|-------|--------|---------|-------------|
+| `src` | URL | — | Load markdown from a URL |
+| `editMode` | `true` / `false` | `true` | Start in edit or read mode |
+| `nightMode` | `true` / `false` | `false` | Start with dark theme |
+| `dir` | `rtl` / `ltr` | `rtl` | Text direction |
 
-### What is markdown?
-[`Markdown`](https://en.wikipedia.org/wiki/Markdown) is a lightweight way of
-formatting text so that it can be easily converted into `HTML` for display on
-web pages.
+---
 
-### How to type Urdu?
-There are several excellent Urdu keyboards available. I use a phonetic keyboard
-that can be found [here](https://urdu.ca/1). For convenience, you can quickly
-switch between languages on your computer by using `Alt+Shift` (Windows) and
-`Command+Space` or `Command+Option+Space` (Mac).  
+## Usage
 
-For Chrome users, you can add the [Google Input Tools](https://www.google.com/inputtools/try/)
-extension that allows you to use phonetic and standard Urdu keyboards on your
-browser.
+### Editing
+- Use the formatting toolbar or keyboard shortcuts to insert markdown syntax
+- Switch between **Edit** and **Read** modes via the status bar toggle
+- Enable **Focus Mode** (F11) for distraction-free writing
 
-### Compatibility
-I have tested **Urdown** on Internet Explorer 11, Edge, and Chrome 53. The best
-experience, by far, was on Chrome.  
+### File Operations
+| Action | Shortcut | Description |
+|--------|----------|-------------|
+| New Document | `Ctrl+M` | Clear editor |
+| Open File | `Ctrl+O` | Load from URL or local file |
+| Save | `Ctrl+S` | Download as `.md` |
+| Export PDF | `Ctrl+P` | Browser print-to-PDF |
+| Show HTML | `Ctrl+H` | View rendered HTML source |
+| Undo | `Ctrl+Z` | Undo last change |
+| Redo | `Ctrl+Shift+Z` | Redo last change |
+| Search | `Ctrl+F` | Find text in document |
+| Toggle Edit | `Ctrl+E` | Switch edit/read mode |
+| Toggle Night | `Ctrl+D` | Switch light/dark theme |
+| Focus Mode | `F11` | Toggle distraction-free |
+| Opposite Dir | `Ctrl+,` | Insert LTR-block within RTL |
+| Help | `?` | Open keyboard shortcuts |
 
-### Contributing
-There are several venues for contributing:  
+### RTL Text Blocks
+Enclose English/LTR text in triple commas `,,,` to automatically render it in the opposite direction:
 
-* Add a new user interface language. To do that duplicate `static/ui/english.json` and name it to language of choice (in english). Then translate all strings on right hand side into your language. Then add your language option to `js/urdown.js` in the `UILANGS` variable at the top.
-* Add auto-scrolling feature. Currently you have to manually scroll down both the input and output panes to edit text longer than page height. A feature where the output pane scrolls to the corresponding location of the cursor on the input pane would be amazing.
+```
+یہ اردو متن ہے۔
+,,,
+This English text will be LTR.
+,,,
+یہ دوبارہ اردو۔
+```
+
+### HugoWiki Shortcodes
+```
+{{% ltr %}}English text{{% \ltr %}}
+{{% rtl %}}اردو متن{{% \rtl %}}
+```
+
+---
+
+## Project Structure
+
+```
+Urdown/
+├── index.html              # Single-page application entry
+├── static/
+│   ├── css/
+│   │   ├── styles.css      # App styles (CSS custom properties, responsive)
+│   │   └── output.css      # Preview/rendered markdown styles
+│   ├── js/
+│   │   └── urdown.js       # AngularJS controller & directives
+│   ├── ui/
+│   │   ├── english.json    # English UI strings
+│   │   └── urdu.json       # Urdu UI strings
+│   ├── img/                # Icons and favicon
+│   └── placeholder.txt     # Default placeholder content
+├── docs/                   # Documentation (English & Urdu)
+├── README.md               # This file
+└── .gitignore
+```
+
+---
+
+## Contributing
+
+Contributions are welcome! Areas you can help:
+
+- **UI Translations** — Add a new language by copying `static/ui/english.json`, translating the strings, and registering it in `UILANGS` in `urdown.js`
+- **Features** — Auto-scrolling, image paste, emoji picker, collaborative editing
+- **Design** — Refinements to the responsive layout, animations, or theme system
+- **Performance** — Optimization for large documents
+
+---
+
+## Credits
+
+This project is a **complete modernization and enhancement** of the original [Urdown](https://github.com/hazrmard/Urdown) by [Hassan A. Z. Mardani](https://github.com/hazrmard).
+
+> **Special thanks to the original author** — Hassan A. Z. Mardani — for creating the foundational concept of a web-based Urdu markdown editor. His work made this project possible.
+
+The original version was a lightweight AngularJS + Showdown.js editor with essential RTL markdown capabilities. This fork adds:
+- Premium responsive mobile-first UI with CSS custom properties theming
+- Full formatting toolbar (bold, italic, headings, lists, code, tables, links, images, HR)
+- Undo/redo history stack
+- Search & replace functionality
+- Word/character/reading-time statistics
+- Auto-save with localStorage
+- Focus/fullscreen mode
+- Scroll-sync between editor and preview
+- Drag-and-drop file loading
+- Line numbers, word wrap toggle
+- Settings panel (font size, line height, layout controls)
+- Keyboard shortcuts reference modal
+- Markdown help/cheatsheet modal
+- Toast notification system
+- Enhanced typography with Noto Nastaliq Urdu and Inter fonts
+- Multi-language UI (English & Urdu)
+
+---
+
+## License
+
+[MIT](LICENSE) — Original work by Hassan A. Z. Mardani. Modifications and enhancements by [yasinULLAH](https://github.com/yasinULLAH).

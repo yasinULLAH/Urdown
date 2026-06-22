@@ -6,17 +6,109 @@
         "html": "HTML",
         "open": "کھولیں",
         "new": "نیا",
-        "export": "درآمد",
-        "save": "محفوظ"
+        "export": "PDF برآمد",
+        "save": "محفوظ",
+        "menu": "مینیو",
+        "search": "تلاش",
+        "stats": "شماریات",
+        "settings": "ترتیبات",
+        "focus": "فوکس موڈ",
+        "shortcuts": "شارٹ کٹ",
+        "copy": "نقل",
+        "toggleEdit": "ترمیم",
+        "swapDir": "سمت تبدیل",
+        "exportKbd": "Ctrl+P"
     },
     "option": {
-        "nightMode": "انداز رات",
-        "editMode": "انداز تصیح"
+        "nightMode": "رات",
+        "editMode": "ترمیم"
     },
     "prompt": {
+        "openTitle": "فائل کھولیں",
         "openLink": "دستاویز کا اِنٹرنیٹ لِنک ڈالیں:",
         "openFile": "یا کمپیوٹر سے دستاویز چنیں:",
-        "selectFile": "دستاویزات۔۔۔"
+        "selectFile": "فائل چنیں",
+        "oppDirTitle": "مخالف سمت کا متن",
+        "dropFile": "فائل یہاں چھوڑیں"
+    },
+    "preview": {
+        "title": "پیش منظر"
+    },
+    "search": {
+        "placeholder": "تلاش کریں...",
+        "next": "اگلا",
+        "prev": "پچھلا",
+        "replace": "بدلیں",
+        "replaceAll": "سب بدلیں",
+        "replacePlaceholder": "اس سے بدلیں..."
+    },
+    "stats": {
+        "title": "شماریات",
+        "words": "الفاظ",
+        "chars": "حروف",
+        "charsNoSpace": "بغیر سپیس",
+        "lines": "سطور",
+        "paragraphs": "پیراگراف",
+        "readingTime": "مطالعہ کا وقت",
+        "headings": "سرخیاں",
+        "links": "لنکس",
+        "wordsShort": "الفاظ",
+        "charsShort": "حروف",
+        "readingTimeShort": "مطالعہ"
+    },
+    "settings": {
+        "title": "ترتیبات",
+        "fontSize": "فانٹ سائز",
+        "lineHeight": "لائن ہائٹ",
+        "autoSave": "خودکار محفوظ",
+        "wordWrap": "ورڈ ریپ",
+        "lineNumbers": "لائن نمبر",
+        "scrollSync": "اسکرول سنک",
+        "autoPreview": "لائیو پیش منظر"
+    },
+    "sidebar": {
+        "title": "Urdown"
+    },
+    "shortcuts": {
+        "title": "کی بورڈ شارٹ کٹ"
+    },
+    "help": {
+        "title": "مارک ڈاؤن مدد"
+    },
+    "toolbar": {
+        "bold": "بولڈ",
+        "italic": "اٹالک",
+        "strikethrough": "ٹوٹی لکیر",
+        "heading1": "سرخی 1",
+        "heading2": "سرخی 2",
+        "heading3": "سرخی 3",
+        "bulletList": "فہرست",
+        "numberedList": "نمبر والی فہرست",
+        "taskList": "کام کی فہرست",
+        "blockquote": "اقتباس",
+        "codeBlock": "کوڈ بلاک",
+        "inlineCode": "ان لائن کوڈ",
+        "link": "لنک",
+        "image": "تصویر",
+        "table": "جدول",
+        "horizontalRule": "لکیر"
+    },
+    "status": {
+        "saved": "محفوظ",
+        "unsaved": "غیر محفوظ"
+    },
+    "toast": {
+        "welcome": "Urdown میں خوش آمدید",
+        "saved": "فائل محفوظ ہو گئی",
+        "copied": "کلپ بورڈ پر نقل ہو گیا",
+        "fileLoaded": "فائل لوڈ ہو گئی",
+        "loadError": "فائل لوڈ نہیں ہو سکی",
+        "error": "غلطی",
+        "newDoc": "نئی دستاویز بن گئی",
+        "focusMode": "فوکس موڈ فعال"
+    },
+    "confirm": {
+        "discard": "غیر محفوظ تبدیلیاں ختم کر دیں؟"
     },
     "helpLink": "#?src=.%2Fdocs%2Furdown.md"
 }

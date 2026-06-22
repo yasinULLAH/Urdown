@@ -2,71 +2,352 @@
 <html dir="rtl" ng-app='Urdown'>
 <head>
     <meta charset="UTF-8">
-    <meta name="description" content="Online Urdu markdown editor.">
-    <meta name="keywords" content="اردو آنلایٰنeditor markdown urdu">
-    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
+    <meta name="description" content="Urdown - Premium online Urdu Markdown editor with live preview">
+    <meta name="keywords" content="اردو,markdown,urdu,editor,text editor,rtl">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a1a2e">
     <link rel='shortcut icon' href='./static/img/markdown.ico' type='image/x-icon'/>
-    <title>اردو متن کی تصیح</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+    <title>Urdown - Urdu Markdown Editor</title>
 
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
-    <script type="text/javascript" src="https://code.angularjs.org/1.5.8/angular-sanitize.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.4.3/showdown.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ng-showdown/1.1.0/ng-showdown.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.3/FileSaver.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular-sanitize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ng-showdown/1.1.0/ng-showdown.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="./static/js/urdown.js"></script>
-    <link rel="stylesheet" type="text/css" href="./static/css/styles.css">
-    <link rel="stylesheet" type="text/css" href="./static/css/output.css">
-
-    <!-- Github Star button -->
-    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <link rel="stylesheet" href="./static/css/styles.css">
+    <link rel="stylesheet" href="./static/css/output.css">
 </head>
+<body ng-controller="urdownConverter" ng-class="theme" ng-keydown="shortcutHandler($event)" ng-init="loadUI(); initApp()">
+<div id="app">
 
-<body ng-controller="urdownConverter" ng-class="{day: !nightMode, night: nightMode}" ng-keyDown="shortcutHandler($event)" ng-init="loadUI()">
-<div id="container" ng-class="{read:!editMode}">
-
-<div id="top">
-        <div id="options">
-            <div><label>{{ui.option.nightMode}}<input type="checkbox" ng-model=nightMode></input></label></div>
-            <div><label>{{ui.option.editMode}}<input type="checkbox" ng-model=editMode ng-change="restoreContainer()"></input></label></div>
-            <img src="./static/img/language.png" width="20px"/>
-            <select ng-options="option.label for option in uiLangs track by option.value"
-                    ng-model="uiLang" ng-change="loadUI()">
-            </select>
-            <div class="hvr-border-fade" ng-click="reverseDir()"><img src="./static/img/switch.png" width="16px"/></div>
+    <!-- TOP BAR -->
+    <header id="topbar" ng-class="{scrolled: scrolled}">
+        <div class="topbar-inner">
+            <div class="topbar-start">
+                <button class="icon-btn menu-btn" ng-click="toggleSidebar()" aria-label="Menu" title="{{ui.button.menu}}">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+                <span class="logo" ng-click="scrollToTop()">
+                    <span class="logo-icon">&#8206;U&#8206;</span>
+                    <span class="logo-text">Urdown</span>
+                </span>
+            </div>
+            <div class="topbar-center" id="toolbar">
+                <div class="toolbar-group" ng-repeat="group in toolbarGroups" ng-show="group.condition || group.condition === undefined">
+                    <button class="toolbar-btn" ng-repeat="btn in group.buttons" ng-click="btn.action()" title="{{btn.label}}" ng-disabled="btn.disabled && btn.disabled()">
+                        <span ng-bind-html="btn.icon"></span>
+                    </button>
+                </div>
+            </div>
+            <div class="topbar-end">
+                <button class="icon-btn" ng-click="toggleSearch()" title="{{ui.button.search}}">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </button>
+                <button class="icon-btn" ng-click="toggleSidePanel('stats')" title="{{ui.button.stats}}">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                </button>
+                <button class="icon-btn settings-btn" ng-click="toggleSidePanel('settings')" title="{{ui.button.settings}}">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </button>
+            </div>
         </div>
-        <div id="menu">
-            <a class="github-button" href="https://github.com/hazrmard/Urdown" data-count-href="/hazrmard/Urdown/stargazers" data-count-api="/repos/hazrmard/Urdown#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star hazrmard/Urdown on GitHub">Star</a>
-            <a href="{{ui.helpLink}}" target="_blank"><div class="hvr-border-fade">{{ui.button.help}}</div></a>
-            <div class="hvr-border-fade" ng-click="saveMarkdown()">{{ui.button.save}}</div>
-            <div class="hvr-border-fade" ng-click="printOutput()">{{ui.button.export}}</div>
-            <div class="hvr-border-fade" ng-click="showHTMLPrompt=!showHTMLPrompt; showOpenPrompt=false; showOppDirPrompt=false; showHTMLPrompt?showHTML():null">{{ui.button.html}}</div>
-            <div class="hvr-border-fade" ng-click="newMarkdown()">{{ui.button.new}}</div>
-            <div class="hvr-border-fade" ng-click="openHandler()">{{ui.button.open}}</div>
+    </header>
+
+    <!-- SEARCH BAR -->
+    <div id="searchbar" ng-class="{active: showSearch}">
+        <div class="search-inner">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" ng-model="searchQuery" ng-change="doSearch()" ng-keydown="searchKeydown($event)" placeholder="{{ui.search.placeholder}}" id="searchInput" autofocus>
+            <button class="icon-btn small" ng-click="searchNext()" title="{{ui.search.next}}">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="icon-btn small" ng-click="searchPrev()" title="{{ui.search.prev}}">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <span class="search-count" ng-show="searchQuery">{{searchIndex+1}}/{{searchMatches.length}}</span>
+            <button class="icon-btn small" ng-click="closeSearch()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
         </div>
-</div>
-
-<div id="data_container" dir="{{defaultDir}}">
-    <textarea autofocus id="raw_text" ng-class="defaultDir" placeholder="{{placeholder}}" ng-model="rawText" ng-show="editMode" ng-init="loadMarkdown()"></textarea>
-    <div id="output_outer" ng-class="defaultDir">
-        <div id="output_inner" ng-init="" markdown-to-html="rawText.length === 0 ? placeholder : rawText"></div>
+        <div class="search-replace" ng-show="showSearchReplace">
+            <input type="text" ng-model="searchReplace" placeholder="{{ui.search.replacePlaceholder}}" ng-keydown="replaceKeydown($event)">
+            <button class="toolbar-btn small" ng-click="replaceOne()">{{ui.search.replace}}</button>
+            <button class="toolbar-btn small" ng-click="replaceAll()">{{ui.search.replaceAll}}</button>
+        </div>
     </div>
-</div>
 
-<div id="prompt" dir="{{defaultDir}}" ng-show="showOpenPrompt || showHTMLPrompt || showOppDirPrompt">
-    <div ng-show="showOpenPrompt">{{ui.prompt.openLink}}</div>
-    <input ng-show="showOpenPrompt" id="open_link_text" type="text" ng-model="promptInput" ng-enter="showOpenPrompt=false; getMarkdown(promptInput)"></input>
-    <div ng-show="showOpenPrompt">{{ui.prompt.openFile}}</div>
-    <input ng-show="showOpenPrompt" id="fileinput" type="file" accept="text/*, *.md" onchange="angular.element(this).scope().readMarkdown()"></input>
-    <label ng-show="showOpenPrompt" for="fileinput" id="fileinput_label" class="hvr-border-fade">{{ui.prompt.selectFile}}</label>
-    <div dir="ltr" id="html_output" ng-show="showHTMLPrompt" contenteditable>{{outHTML}}</div>
-    <textarea autofocus dir={{oppDir}} id="opp_input" ng-model="oppDirText" ng-show="showOppDirPrompt"></textarea>
-    <div id="prompt_commands">
-        <div ng-show="showOpenPrompt || showOppDirPrompt" class="hvr-border-fade" ng-click="okHandler()">{{ui.button.ok}}</div>
-        <div class="hvr-border-fade" ng-click="escHandler()">{{ui.button.cancel}}</div>
+    <!-- SIDEBAR -->
+    <div id="sidebar" ng-class="{open: sidebarOpen}">
+        <div class="sidebar-header">
+            <span class="sidebar-title">{{ui.sidebar.title}}</span>
+            <button class="icon-btn" ng-click="closeSidebar()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="sidebar-body">
+            <div class="sidebar-section">
+                <div class="sidebar-item" ng-click="newMarkdown()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                    <span>{{ui.button.new}}</span>
+                    <kbd>Ctrl+M</kbd>
+                </div>
+                <div class="sidebar-item" ng-click="openHandler()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                    <span>{{ui.button.open}}</span>
+                    <kbd>Ctrl+O</kbd>
+                </div>
+                <div class="sidebar-item" ng-click="saveMarkdown()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    <span>{{ui.button.save}}</span>
+                    <kbd>Ctrl+S</kbd>
+                </div>
+            </div>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-section">
+                <div class="sidebar-item" ng-click="showHTMLPanel()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                    <span>{{ui.button.html}}</span>
+                    <kbd>Ctrl+H</kbd>
+                </div>
+                <div class="sidebar-item" ng-click="exportPDF()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    <span>{{ui.button.export}}</span>
+                    <kbd>{{ui.button.exportKbd}}</kbd>
+                </div>
+                <div class="sidebar-item" ng-click="toggleFocusMode()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                    <span>{{ui.button.focus}}</span>
+                    <kbd>F11</kbd>
+                </div>
+            </div>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-section">
+                <div class="sidebar-item" ng-click="toggleHelp()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    <span>{{ui.button.help}}</span>
+                </div>
+                <div class="sidebar-item" ng-click="toggleShortcuts()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M6 16h.01M10 16h.01M14 16h.01M18 16h.01"/></svg>
+                    <span>{{ui.button.shortcuts}}</span>
+                    <kbd>?</kbd>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+    <div id="sidebar-overlay" ng-show="sidebarOpen" ng-click="closeSidebar()"></div>
+
+    <!-- SIDE PANEL (stats/settings) -->
+    <div id="sidepanel" ng-class="{open: sidePanelOpen, stats: sidePanelType=='stats', settings: sidePanelType=='settings'}">
+        <div class="sidepanel-header">
+            <span>{{sidePanelType=='stats' ? ui.stats.title : ui.settings.title}}</span>
+            <button class="icon-btn" ng-click="closeSidePanel()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="sidepanel-body">
+            <!-- STATS -->
+            <div ng-if="sidePanelType=='stats'" class="stats-panel">
+                <div class="stat-card"><span class="stat-value">{{stats.words}}</span><span class="stat-label">{{ui.stats.words}}</span></div>
+                <div class="stat-card"><span class="stat-value">{{stats.chars}}</span><span class="stat-label">{{ui.stats.chars}}</span></div>
+                <div class="stat-card"><span class="stat-value">{{stats.charsNoSpace}}</span><span class="stat-label">{{ui.stats.charsNoSpace}}</span></div>
+                <div class="stat-card"><span class="stat-value">{{stats.lines}}</span><span class="stat-label">{{ui.stats.lines}}</span></div>
+                <div class="stat-card"><span class="stat-value">{{stats.paragraphs}}</span><span class="stat-label">{{ui.stats.paragraphs}}</span></div>
+                <div class="stat-card"><span class="stat-value">{{stats.readingTime}}</span><span class="stat-label">{{ui.stats.readingTime}}</span></div>
+                <div class="stat-card"><span class="stat-value">{{stats.headings}}</span><span class="stat-label">{{ui.stats.headings}}</span></div>
+                <div class="stat-card"><span class="stat-value">{{stats.links}}</span><span class="stat-label">{{ui.stats.links}}</span></div>
+            </div>
+            <!-- SETTINGS -->
+            <div ng-if="sidePanelType=='settings'" class="settings-panel">
+                <div class="setting-row">
+                    <label>{{ui.settings.fontSize}}</label>
+                    <div class="setting-control">
+                        <button class="icon-btn small" ng-click="adjustFontSize(-1)" ng-disabled="settings.fontSize <= 12">-</button>
+                        <span class="setting-value">{{settings.fontSize}}px</span>
+                        <button class="icon-btn small" ng-click="adjustFontSize(1)" ng-disabled="settings.fontSize >= 28">+</button>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <label>{{ui.settings.lineHeight}}</label>
+                    <div class="setting-control">
+                        <button class="icon-btn small" ng-click="adjustLineHeight(-0.1)" ng-disabled="settings.lineHeight <= 1.2">-</button>
+                        <span class="setting-value">{{settings.lineHeight}}</span>
+                        <button class="icon-btn small" ng-click="adjustLineHeight(0.1)" ng-disabled="settings.lineHeight >= 2.5">+</button>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <label>{{ui.settings.autoSave}}</label>
+                    <label class="switch"><input type="checkbox" ng-model="settings.autoSave" ng-change="saveSettings()"><span class="slider"></span></label>
+                </div>
+                <div class="setting-row">
+                    <label>{{ui.settings.wordWrap}}</label>
+                    <label class="switch"><input type="checkbox" ng-model="settings.wordWrap" ng-change="applySettings()"><span class="slider"></span></label>
+                </div>
+                <div class="setting-row">
+                    <label>{{ui.settings.lineNumbers}}</label>
+                    <label class="switch"><input type="checkbox" ng-model="settings.lineNumbers" ng-change="applySettings()"><span class="slider"></span></label>
+                </div>
+                <div class="setting-row">
+                    <label>{{ui.settings.scrollSync}}</label>
+                    <label class="switch"><input type="checkbox" ng-model="settings.scrollSync" ng-change="applySettings()"><span class="slider"></span></label>
+                </div>
+                <div class="setting-row">
+                    <label>{{ui.settings.autoPreview}}</label>
+                    <label class="switch"><input type="checkbox" ng-model="settings.autoPreview" ng-change="applySettings()"><span class="slider"></span></label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="sidepanel-overlay" ng-show="sidePanelOpen" ng-click="closeSidePanel()"></div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main" ng-class="{'focus-mode': focusMode, 'sidebar-open': sidebarOpen}">
+        <div id="editor-area" ng-class="{'full-width': !settings.autoPreview || !editMode}">
+            <!-- LINE NUMBERS -->
+            <div id="line-nums" ng-show="settings.lineNumbers && editMode" ng-class="defaultDir">
+                <div ng-repeat="n in lineNumArray track by $index" class="line-num">{{$index + 1}}</div>
+            </div>
+            <!-- TEXTAREA -->
+            <textarea id="raw_text"
+                ng-class="[defaultDir, {night: theme=='night', day: theme!='night'}]"
+                placeholder="{{placeholder}}"
+                ng-model="rawText"
+                ng-show="editMode"
+                ng-change="onTextChange()"
+                ng-scroll="onEditorScroll()"
+                ng-style="editorStyle"
+                ng-focus="editorFocused=true"
+                ng-blur="editorFocused=false"
+                spellcheck="true"
+                ng-init="loadMarkdown()">
+            </textarea>
+            <!-- PREVIEW -->
+            <div id="preview-area" ng-class="{'full-width': !editMode || !settings.autoPreview}">
+                <div id="preview-toolbar" ng-show="editMode && settings.autoPreview">
+                    <span class="preview-label">{{ui.preview.title}}</span>
+                    <div class="preview-actions">
+                        <button class="icon-btn small" ng-click="copyPreview()" title="{{ui.button.copy}}">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        </button>
+                        <button class="icon-btn small" ng-click="toggleReadMode()" title="{{ui.button.toggleEdit}}">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <div id="output_outer" ng-class="defaultDir" ng-scroll="onPreviewScroll()">
+                    <div id="output_inner" markdown-to-html="rawText.length === 0 ? placeholder : rawText"></div>
+                </div>
+            </div>
+            <!-- SPLITTER -->
+            <div id="splitter" ng-show="editMode && settings.autoPreview" ng-mousedown="startResize($event)"></div>
+        </div>
+    </div>
+
+    <!-- STATUS BAR -->
+    <footer id="statusbar">
+        <div class="status-left">
+            <span class="status-item" ng-click="toggleSidePanel('stats')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                {{stats.words}} {{ui.stats.wordsShort}} &middot; {{stats.chars}} {{ui.stats.charsShort}}
+            </span>
+            <span class="status-item" ng-show="rawText.length">{{ui.stats.readingTimeShort}} {{stats.readingTime}}</span>
+        </div>
+        <div class="status-center">
+            <span class="status-item saved-status" ng-class="{saved: saved, unsaved: !saved && rawText.length}">
+                {{saved ? ui.status.saved : ui.status.unsaved}}
+            </span>
+        </div>
+        <div class="status-right">
+            <span class="status-item">{{ui.option.editMode}}
+                <label class="switch small"><input type="checkbox" ng-model="editMode" ng-change="restoreContainer()"><span class="slider"></span></label>
+            </span>
+            <span class="status-item">{{ui.option.nightMode}}
+                <label class="switch small"><input type="checkbox" ng-model="themeToggle" ng-change="toggleNightMode()"><span class="slider"></span></label>
+            </span>
+            <span class="status-item lang-selector">
+                <img src="./static/img/language.png" width="14px"/>
+                <select ng-options="option.label for option in uiLangs track by option.value"
+                        ng-model="uiLang" ng-change="loadUI()">
+                </select>
+            </span>
+            <button class="icon-btn small" ng-click="reverseDir()" title="{{ui.button.swapDir}}">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+            </button>
+        </div>
+    </footer>
+
+    <!-- PROMPT MODAL -->
+    <div id="modal-overlay" ng-show="showOpenPrompt || showHTMLPrompt || showOppDirPrompt || showShortcutsModal || showHelpModal" ng-click="escHandler()"></div>
+    <div id="modal" dir="{{defaultDir}}" ng-show="showOpenPrompt || showHTMLPrompt || showOppDirPrompt" class="modal-active">
+        <div class="modal-header">
+            <span ng-if="showOpenPrompt">{{ui.prompt.openTitle}}</span>
+            <span ng-if="showHTMLPrompt">{{ui.button.html}}</span>
+            <span ng-if="showOppDirPrompt">{{ui.prompt.oppDirTitle}}</span>
+            <button class="icon-btn" ng-click="escHandler()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        </div>
+        <div class="modal-body">
+            <div ng-show="showOpenPrompt">
+                <div class="modal-section">
+                    <label>{{ui.prompt.openLink}}</label>
+                    <input type="text" ng-model="promptInput" ng-enter="showOpenPrompt=false; getMarkdown(promptInput)" placeholder="https://...">
+                </div>
+                <div class="modal-section">
+                    <label>{{ui.prompt.openFile}}</label>
+                    <div class="file-upload">
+                        <input type="file" id="fileinput" accept=".md,.txt,text/*" onchange="angular.element(this).scope().readMarkdown()">
+                        <label for="fileinput" class="file-label">{{ui.prompt.selectFile}}</label>
+                        <span class="file-name" ng-show="fileName">{{fileName}}</span>
+                    </div>
+                </div>
+            </div>
+            <div ng-show="showHTMLPrompt">
+                <div id="html_output" dir="ltr" contenteditable>{{outHTML}}</div>
+                <button class="toolbar-btn" ng-click="copyHTML()">{{ui.button.copy}}</button>
+            </div>
+            <div ng-show="showOppDirPrompt">
+                <textarea dir="{{oppDir}}" id="opp_input" ng-model="oppDirText"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button ng-show="showOpenPrompt || showOppDirPrompt" class="toolbar-btn primary" ng-click="okHandler()">{{ui.button.ok}}</button>
+            <button class="toolbar-btn" ng-click="escHandler()">{{ui.button.cancel}}</button>
+        </div>
+    </div>
+
+    <!-- SHORTCUTS MODAL -->
+    <div id="shortcuts-modal" class="modal-lg" ng-show="showShortcutsModal" ng-click="escHandler()">
+        <div class="modal-lg-content" ng-click="$event.stopPropagation()">
+            <div class="modal-header">
+                <span>{{ui.shortcuts.title}}</span>
+                <button class="icon-btn" ng-click="escHandler()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+            </div>
+            <div class="modal-body">
+                <div class="shortcut-grid">
+                    <div class="shortcut-item" ng-repeat="sc in shortcuts"><kbd>{{sc.key}}</kbd><span>{{sc.label}}</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HELP MODAL (markdown cheatsheet) -->
+    <div id="help-modal" class="modal-lg" ng-show="showHelpModal" ng-click="escHandler()">
+        <div class="modal-lg-content" ng-click="$event.stopPropagation()">
+            <div class="modal-header">
+                <span>{{ui.help.title}}</span>
+                <button class="icon-btn" ng-click="escHandler()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+            </div>
+            <div class="modal-body" id="help-content">
+                <div id="output_inner_help" markdown-to-html="helpContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" ng-class="{show: toast.show, success: toast.type=='success', error: toast.type=='error', info: toast.type=='info'}" ng-bind="toast.message"></div>
 
 </div>
 </body>
-
 </html>
