@@ -4,8 +4,8 @@
    =========================== */
 
 /* --- Font setup --- */
-body {
-  font-family: 'Calibri', 'Corbel', 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif;
+body, #app, input, textarea, select, button {
+  font-family: 'Calibri', 'Corbel', 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -239,10 +239,17 @@ body.night {
 }
 
 /* ===========================
+   NG-CLOAK (prevent FOUC)
+   =========================== */
+[ng-cloak] {
+  display: none !important;
+}
+
+/* ===========================
    TEXTAREA
    =========================== */
 #raw_text, #opp_input {
-  font-family: 'Calibri', 'Corbel', 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif;
+  font-family: 'Calibri', 'Corbel', 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif !important;
 }
 .rtl-textarea {
   font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', serif !important;

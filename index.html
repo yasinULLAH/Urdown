@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="./static/css/styles.css">
     <link rel="stylesheet" href="./static/css/output.css">
 </head>
-<body ng-controller="urdownCtrl" ng-class="{'dark': theme==='night', 'day': theme==='day', 'night': theme==='night'}" ng-keydown="keyHandler($event)" dir="{{defaultDir}}" class="h-screen w-screen overflow-hidden flex flex-col bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-['Calibri','Corbel','Segoe_UI','Tahoma','Geneva','Verdana',sans-serif] transition-colors duration-300 selection:bg-primary-200 dark:selection:bg-primary-800" ng-init="loadUI(); init()">
+<body ng-controller="urdownCtrl" ng-class="{'dark': theme==='night', 'day': theme==='day', 'night': theme==='night'}" ng-keydown="keyHandler($event)" ng-cloak dir="{{defaultDir}}" class="h-screen w-screen overflow-hidden flex flex-col bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-['Calibri','Corbel','Segoe_UI','Tahoma','Geneva','Verdana',sans-serif] transition-colors duration-300 selection:bg-primary-200 dark:selection:bg-primary-800" ng-init="loadUI(); init()">
 
 <div id="app" class="h-screen flex flex-col overflow-hidden relative">
 
