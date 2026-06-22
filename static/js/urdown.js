@@ -345,44 +345,41 @@ urdown.controller('urdownCtrl', function ($scope, $http, $location, $window, $ti
         try { localStorage.setItem('urdown_bars', JSON.stringify($scope.showBars)) } catch (e) {}
     }
     $scope.exporting = false
-    function getInlineCSS() {
-        var css = ''; var seen = {}
-        for (var i = 0; i < document.styleSheets.length; i++) {
-            try {
-                var sheet = document.styleSheets[i]
-                for (var j = 0; j < sheet.cssRules.length; j++) {
-                    var t = sheet.cssRules[j].cssText
-                    if (!seen[t]) { css += t; seen[t] = true }
-                }
-            } catch (e) {}
-        }
-        return css
-    }
-    function openPrintWindow(title, isDownload) {
+    function buildExportHTML(isDownload) {
         var out = document.getElementById('output_outer')
-        if (!out || !out.innerHTML.trim()) { $scope.showToast('Nothing to export', 'error'); return }
-        $scope.exporting = true
-        var css = getInlineCSS()
-        var printCSS = 'body{margin:2em auto;padding:0;max-width:210mm;font-family:Calibri,sans-serif}' +
-            '@page{margin:15mm' + (isDownload ? ';size:A4' : '') + '}' +
-            '#output_inner{font-size:12pt}' +
-            '#topbar,#statusbar,.slide-start,.slide-end,.fixed,#splitter,#toast,#line-nums,#raw_text{display:none!important}'
+        if (!out) return null
+        var css = ''
+        for (var i = 0; i < document.styleSheets.length; i++) {
+            try { var s = document.styleSheets[i]; for (var j = 0; j < s.cssRules.length; j++) css += s.cssRules[j].cssText } catch (e) {}
+        }
+        var printCSS = 'body{margin:2em auto;padding:1em;max-width:210mm;font-family:Calibri,Corbel,Segoe UI,Tahoma,Geneva,Verdana,sans-serif}' +
+            '@page{margin:12mm' + (isDownload ? ';size:A4' : '') + '}' +
+            '#output_inner{font-size:12pt!important}' +
+            '#topbar,#statusbar,.slide-start,.slide-end,.fixed,#splitter,#toast,#line-nums,#raw_text,#searchbar{display:none!important}'
         var dir = out.getAttribute('dir') || 'rtl'
-        var html = '<!DOCTYPE html><html dir="' + dir + '"><head><meta charset="UTF-8"><title>' + title +
-            '</title><style>' + css + printCSS + '</style></head><body>' + out.innerHTML + '</body></html>'
-        var w = window.open('', '_blank')
-        if (!w) { $scope.showToast('Popup blocked — allow popups for this site', 'error'); $scope.exporting = false; return }
-        w.document.write(html)
-        w.document.close()
-        w.document.title = title
-        w.onload = function () { $scope.$apply(function () { $scope.exporting = false }); w.focus(); w.print() }
-        $timeout(function () { if ($scope.exporting) $scope.exporting = false }, 5000)
+        return '<!DOCTYPE html><html dir="' + dir + '"><head><meta charset="UTF-8"><style>' + css + printCSS + '</style></head><body>' + out.innerHTML + '</body></html>'
     }
-    $scope.exportPDF = function () { openPrintWindow(($scope.fileName || 'urdown') + '-print', false) }
-    $scope.downloadPDF = function () {
-        openPrintWindow(($scope.fileName || 'urdown') + '.pdf', true)
-        $scope.showToast('In print dialog, choose "Save as PDF" as destination', 'info')
+    function doExportPrint(html, title, msg, isDownload) {
+        if (!html) { $scope.showToast('Nothing to export', 'error'); return }
+        $scope.exporting = true
+        var iframe = document.createElement('iframe')
+        iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:210mm;height:297mm;border:none;opacity:0;pointer-events:none'
+        document.body.appendChild(iframe)
+        var doc = iframe.contentDocument || iframe.contentWindow.document
+        doc.open(); doc.write(html); doc.close()
+        doc.title = title
+        if (msg) $scope.showToast(msg, 'info')
+        $timeout(function () {
+            try {
+                iframe.contentWindow.focus()
+                iframe.contentWindow.print()
+            } catch (e) { $scope.showToast('Print failed — try Export Image instead', 'error') }
+            $scope.exporting = false
+            $timeout(function () { if (iframe.parentNode) iframe.parentNode.removeChild(iframe) }, 2000)
+        }, 600)
     }
+    $scope.exportPDF = function () { doExportPrint(buildExportHTML(false), ($scope.fileName || 'urdown') + '-print', null, false) }
+    $scope.downloadPDF = function () { doExportPrint(buildExportHTML(true), ($scope.fileName || 'urdown') + '.pdf', 'Choose "Save as PDF" in the print dialog', true) }
     $scope.isFullscreen = false
     $scope.toggleFullscreen = function () {
         if (!document.fullscreenElement) {
@@ -402,7 +399,7 @@ urdown.controller('urdownCtrl', function ($scope, $http, $location, $window, $ti
         if (typeof domtoimage === 'undefined') { $scope.showToast('Image export not available', 'error'); return }
         $scope.exporting = true
         document.fonts.ready.then(function () {
-            domtoimage.toBlob(el, { quality: 1, bgColor: '#ffffff', width: el.scrollWidth * 2, height: el.scrollHeight * 2, style: { transform: 'scale(2)', transformOrigin: 'top left' } })
+            domtoimage.toBlob(el, { bgColor: '#ffffff', width: el.scrollWidth * 2, height: el.scrollHeight * 2, style: { margin: '0', padding: '0' } })
                 .then(function (blob) {
                     saveAs(blob, ($scope.fileName || 'urdown').replace(/\.[^.]+$/, '') + '-preview.png')
                     $scope.$apply(function () { $scope.showToast('Image exported', 'success'); $scope.exporting = false })
