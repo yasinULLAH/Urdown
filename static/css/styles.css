@@ -393,15 +393,30 @@ body.focus-mode #topbar:hover {
    PRINT
    =========================== */
 @media print {
-  body { background: white !important; color: black !important; }
+  @page { margin: 12mm; size: A4; }
+  html, body {
+    background: white !important; color: black !important;
+    height: auto !important; overflow: visible !important;
+    font-family: 'Calibri', 'Corbel', 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif !important;
+  }
+  body > * { display: none !important; }
+  body > #app { display: block !important; }
   #topbar, #statusbar, .slide-start, .slide-end, .fixed,
-  #splitter, #toast, #searchbar, .md\\:hidden, icon-btn { display: none !important; }
-  #main { overflow: visible !important; display: block !important; }
-  #editor-pane { display: block !important; }
-  #raw_text { display: none !important; }
-  #preview-pane { display: block !important; width: 100% !important; border: none !important; }
-  #output_outer { padding: 0 !important; }
+  #splitter, #toast, .md\\:hidden, icon-btn,
+  #line-nums, #raw_text, #searchbar,
+  #mobileToolbar, .menu-item, button, select, label,
+  [class*="slide-"], [class*="icon-btn"], [class*="toolbar-btn"] { display: none !important; }
+  #app { height: auto !important; overflow: visible !important; display: block !important; }
+  #main { overflow: visible !important; display: block !important; height: auto !important; }
+  #editor-pane { display: block !important; height: auto !important; width: 100% !important; }
+  #preview-pane { display: block !important; width: 100% !important; height: auto !important; border: none !important; box-shadow: none !important; }
+  #output_outer { padding: 0 !important; height: auto !important; overflow: visible !important; }
+  #output_inner { max-width: 100% !important; font-size: 12pt !important; }
   #output_inner * { color: black !important; }
+  #output_inner a { color: #6366f1 !important; }
+  #output_inner pre { white-space: pre-wrap !important; break-inside: avoid; }
+  #output_inner table { break-inside: avoid; }
+  #output_inner img { max-width: 100% !important; }
 }
 
 /* ===========================

@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="./static/css/styles.css">
     <link rel="stylesheet" href="./static/css/output.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="./static/js/history.js"></script>
     <script src="./static/js/urdown.js"></script>
 </head>
@@ -30,7 +30,7 @@
 <div id="app" class="h-screen flex flex-col overflow-hidden relative">
 
     <!-- ============ TOPBAR ============ -->
-    <header id="topbar" class="h-12 min-h-[48px] flex items-center px-2 border-b border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur-sm z-40 gap-0.5" ng-class="{'shadow-sm': scrolled}">
+    <header id="topbar" ng-show="showBars" class="h-12 min-h-[48px] flex items-center px-2 border-b border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur-sm z-40 gap-0.5" ng-class="{'shadow-sm': scrolled}">
         <!-- Start: Menu + Logo -->
         <div class="flex items-center gap-1 shrink-0">
             <button class="w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 active:scale-95 transition-all" ng-click="mobileToolbar=!mobileToolbar" title="Menu">
@@ -67,6 +67,10 @@
         </div>
         <!-- End: Search + Actions -->
         <div class="flex items-center gap-0.5 mr-auto shrink-0">
+            <button class="icon-btn small" ng-click="toggleBars()" title="Toggle bars">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" ng-if="showBars"><polyline points="18 15 12 9 6 15"/></svg>
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" ng-if="!showBars"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
             <button class="icon-btn" ng-click="toggleSearch()" title="Search (Ctrl+F)">
                 <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             </button>
@@ -152,19 +156,19 @@
                         </button>
                     </div>
                 </div>
-                <div id="output_outer" class="flex-1 overflow-y-auto overflow-x-hidden p-5" ng-scroll="onPreviewScroll()" dir="{{defaultDir}}">
+                <div id="output_outer" class="flex-1 overflow-y-auto overflow-x-hidden" ng-scroll="onPreviewScroll()" dir="{{defaultDir}}">
                     <div id="output_inner" markdown-to-html="rawText.length === 0 ? placeholder : rawText" dir="{{defaultDir}}"></div>
                 </div>
             </div>
             <!-- Splitter -->
-            <div id="splitter" ng-show="editMode && settings.autoPreview" class="absolute top-0 bottom-0 w-[5px] cursor-col-resize z-10 group" ng-style="splitterStyle()" ng-mousedown="resizeStart($event)">
-                <div class="w-[5px] h-full rounded-full bg-gray-300 dark:bg-gray-700 group-hover:bg-primary-400/60 group-active:bg-primary-500/80 transition-colors"></div>
+            <div id="splitter" ng-show="editMode && settings.autoPreview" class="absolute top-0 bottom-0 w-[3px] cursor-col-resize z-10 group" ng-style="splitterStyle()" ng-mousedown="resizeStart($event)">
+                <div class="w-[3px] h-full bg-gray-300 dark:bg-gray-700 group-hover:bg-primary-400 group-active:bg-primary-500 transition-colors"></div>
             </div>
         </div>
     </main>
 
     <!-- ============ STATUSBAR ============ -->
-    <footer id="statusbar" class="h-9 min-h-[36px] flex items-center px-3 gap-3 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 text-xs text-gray-500 dark:text-gray-400 z-30">
+    <footer id="statusbar" ng-show="showBars" class="h-9 min-h-[36px] flex items-center px-3 gap-3 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 text-xs text-gray-500 dark:text-gray-400 z-30">
         <div class="flex items-center gap-3 flex-1">
             <span class="flex items-center gap-1 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300" ng-click="showHistory=!showHistory">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
@@ -212,7 +216,8 @@
             <div class="menu-item" ng-click="mobileToolbar=false;saveFile()"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save <kbd>Ctrl+S</kbd></div>
             <div class="menu-item" ng-click="mobileToolbar=false;showHTMLPanel()"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>HTML <kbd>Ctrl+H</kbd></div>
             <div class="border-t border-gray-100 dark:border-gray-800 my-2"></div>
-            <div class="menu-item" ng-click="mobileToolbar=false;exportPDF()"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>Export PDF</div>
+            <div class="menu-item" ng-click="mobileToolbar=false;exportPDF()"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>Print / PDF</div>
+            <div class="menu-item" ng-click="mobileToolbar=false;downloadPDF()"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Download PDF</div>
             <div class="menu-item" ng-click="mobileToolbar=false;exportImage()"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Export Image</div>
             <div class="border-t border-gray-100 dark:border-gray-800 my-2"></div>
             <div class="menu-item" ng-click="mobileToolbar=false;showHistory=!showHistory"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</div>
@@ -359,6 +364,11 @@
 
     <!-- ============ TOAST ============ -->
     <div class="fixed bottom-20 left-1/2 -translate-x-1/2 z-[9999] px-5 py-2.5 rounded-2xl shadow-2xl text-sm font-medium transition-all duration-300 pointer-events-none border" ng-class="{'opacity-0 translate-y-4':!toast.show,'opacity-100 translate-y-0':toast.show,'bg-emerald-600 text-white border-emerald-500':toast.type==='success','bg-red-600 text-white border-red-500':toast.type==='error','bg-primary-600 text-white border-primary-500':toast.type==='info'}" ng-bind="toast.message"></div>
+
+    <!-- ============ BARS RE-EXPAND TAB ============ -->
+    <div ng-show="!showBars" class="fixed bottom-0 left-0 right-0 h-7 flex items-center justify-center z-30 cursor-pointer bg-white/80 dark:bg-gray-950/80 backdrop-blur-sm border-t border-gray-200 dark:border-gray-800 hover:bg-white dark:hover:bg-gray-950 transition-colors" ng-click="toggleBars()" title="Show bars">
+        <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
 
 </div>
 </body>

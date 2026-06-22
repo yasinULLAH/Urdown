@@ -7,7 +7,7 @@
   word-wrap: break-word;
   overflow-wrap: break-word;
   font-family: 'Calibri', 'Corbel', 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', sans-serif !important;
-  padding: 0.25em 0;
+  padding: 1.25em;
 }
 
 #output_inner[dir="rtl"] {
