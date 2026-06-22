@@ -345,50 +345,30 @@ urdown.controller('urdownCtrl', function ($scope, $http, $location, $window, $ti
         try { localStorage.setItem('urdown_bars', JSON.stringify($scope.showBars)) } catch (e) {}
     }
     $scope.exporting = false
-    function doExportPrint(title, msg, isDownload) {
-        var out = document.getElementById('output_outer')
-        if (!out || !out.innerHTML.trim()) { $scope.showToast('Nothing to export', 'error'); return }
-        $scope.exporting = true
-        Promise.all([
-            fetch('./static/css/output.css').then(function (r) { return r.text() }).catch(function () { return '' }),
-            fetch('./static/css/styles.css').then(function (r) { return r.text() }).catch(function () { return '' })
-        ]).then(function (styles) {
-            var css = styles.join('\n')
-            var fontLink = ''
-            var fl = document.querySelector('link[href*="fonts.googleapis"]')
-            if (fl) fontLink = fl.outerHTML
-            var printCSS = 'body{margin:1.5em auto;padding:0.5em;max-width:210mm}' +
-                '@page{margin:12mm' + (isDownload ? ';size:A4' : '') + '}' +
-                '#output_inner{font-size:12pt!important}' +
-                '#topbar,#statusbar,.slide-start,.slide-end,.fixed,#splitter,#toast,#line-nums,#raw_text,#searchbar,button,nav,header,footer{display:none!important}'
-            var dir = out.getAttribute('dir') || 'rtl'
-            var html = '<!DOCTYPE html><html dir="' + dir + '"><head><meta charset="UTF-8"><title>' + title + '</title>' +
-                fontLink + '<style>' + css + printCSS + '</style></head><body>' + out.innerHTML + '</body></html>'
-            var blob = new Blob([html], { type: 'text/html;charset=utf-8' })
-            var url = URL.createObjectURL(blob)
-            var iframe = document.createElement('iframe')
-            iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:210mm;height:297mm;border:none;opacity:0'
-            iframe.onload = function () {
-                if (msg) $scope.showToast(msg, 'info')
-                $timeout(function () {
-                    try {
-                        iframe.contentWindow.focus()
-                        iframe.contentWindow.print()
-                    } catch (e) { $scope.showToast('Print failed', 'error') }
-                    $scope.exporting = false
-                    URL.revokeObjectURL(url)
-                    $timeout(function () { if (iframe.parentNode) iframe.parentNode.removeChild(iframe) }, 3000)
-                }, 800)
-            }
-            document.body.appendChild(iframe)
-            iframe.src = url
-        }).catch(function () {
-            $scope.showToast('Export failed', 'error')
-            $scope.exporting = false
+    function hideUI(doHide) {
+        var sel = '#topbar,#statusbar,#splitter,#line-nums,#raw_text,#searchbar,#mobileToolbar,.slide-start,.slide-end,.menu-item,.fixed'
+        document.querySelectorAll(sel).forEach(function (el) {
+            el.style.setProperty('display', doHide ? 'none' : '', doHide ? 'important' : '')
         })
     }
-    $scope.exportPDF = function () { doExportPrint(($scope.fileName || 'urdown') + '-print', null, false) }
-    $scope.downloadPDF = function () { doExportPrint(($scope.fileName || 'urdown') + '.pdf', 'Choose "Save as PDF" in the print dialog', true) }
+    function doPrint() {
+        hideUI(true)
+        $timeout(function () {
+            $window.print()
+            function restore() { hideUI(false); $window.removeEventListener('afterprint', restore) }
+            $window.addEventListener('afterprint', restore)
+            $timeout(function () { hideUI(false) }, 30000)
+        }, 100)
+    }
+    $scope.exportPDF = function () {
+        if (!document.getElementById('output_outer') || !document.getElementById('output_outer').innerHTML.trim()) { $scope.showToast('Nothing to export', 'error'); return }
+        doPrint()
+    }
+    $scope.downloadPDF = function () {
+        if (!document.getElementById('output_outer') || !document.getElementById('output_outer').innerHTML.trim()) { $scope.showToast('Nothing to export', 'error'); return }
+        $scope.showToast('In the print dialog, choose "Save as PDF" as the destination', 'info')
+        doPrint()
+    }
     $scope.isFullscreen = false
     $scope.toggleFullscreen = function () {
         if (!document.fullscreenElement) {
